@@ -11,7 +11,9 @@ from common.preprocessing.eda import do_eda
 from common.preprocessing.preprocessing import do_preprocessing
 from common.modeling.model import get_model
 from common.modeling.training import do_training
+from common.utils import reset_seeds
 
+@reset_seeds
 def modeling():
     logging.info("##################################")
     logging.info("Start Load Dataset")
