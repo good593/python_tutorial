@@ -11,20 +11,20 @@ def __drop_cols(*args, drop_cols):
 
 def __fillna(df_train:pd.DataFrame, df_test:pd.DataFrame, fill_cols:list):
     for col in fill_cols: # fill_cols=['age', 'embarked']
-      try: 
-          # 수치형 데이터 처리 
-          _value = df_train[col].median()
-      except: 
-          # 범주형 데이터 처리 
-          _value = df_train[col].mode().values[0]
-      finally: 
-          # 결측치 채우기 
-          df_train[col].fillna(_value, inplace=True)
-          df_test[col].fillna(_value, inplace=True) 
+        try: 
+            # 수치형 데이터 처리 
+            _value = df_train[col].median()
+        except: 
+            # 범주형 데이터 처리 
+            _value = df_train[col].mode().values[0]
+        finally: 
+            # 결측치 채우기 
+            df_train[col].fillna(_value, inplace=True)
+            df_test[col].fillna(_value, inplace=True) 
         
 
 def do_cleaning(df_train:pd.DataFrame, df_test:pd.DataFrame
-                , drop_cols:list = ['name', 'ticket', 'cabin'],
+                , drop_cols:list = ['name', 'ticket', 'cabin', 'passengerid'],
                 fill_cols:list = ['age', 'fare', 'embarked']):
     logging.info("##################################")
     logging.info("Start do_cleaning")
