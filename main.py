@@ -1,42 +1,45 @@
 import warnings
 warnings.filterwarnings('ignore')
-
 import logging
 logging.basicConfig(level=logging.INFO)
 
-import pandas as pd 
+import argparse
 
-from common.dataset import load_dataset
-from common.preprocessing.eda import do_eda
-from common.preprocessing.preprocessing import do_preprocessing
-from common.modeling.model import get_model
-from common.modeling.training import do_training
-from common.utils import reset_seeds
+###############################
+# 코드 정의 영역 
+###############################
+from service.data_setup import do_load_dataset
+from service.preprocessing.data_preprocessing import do_preprocessing
 
-@reset_seeds
-def modeling():
-    logging.info("##################################")
-    logging.info("Start Load Dataset")
-    # 1. train dataset, test dataset 
-    df_train, df_train_target = load_dataset("./data/train.csv", target_col="survived")
-    df_test, _ = load_dataset("./data/test.csv")
+def main(args):
+    # 데이터 로드 
+    df_train, df_test, df_train_target = do_load_dataset(
+        train_path=args.path_train, test_path=args.path_test, 
+        target_name=args.target_name)
     
-    # 2. eda
-    do_eda(df_train=df_train)
+    # 데이터 전처리 
+    df_train, df_test = do_preprocessing(df_train=df_train,
+                        df_test=df_test,
+                        drop_cols=args.drop_cols,
+                        transform_cols=args.transform_cols,
+                        encoding_cols=args.encoding_cols)
     
-    # 3. data preprocessing
-    tr_x, te_x, tr_y, te_y, test = do_preprocessing(df_train, df_train_target, df_test)
-
-    # 4. model
-    model = do_training(get_model(), tr_x, tr_y, te_x, te_y)
-
-    # 5. prediction
-
-
-    # 6. submission
-
+    
 
 
 if __name__ == "__main__":
-    modeling()
+    ###############################
+    # 코드 실행 영역 
+    ###############################
+    args = argparse.ArgumentParser()
+    args.add_argument("--path_train", default="./data/train.csv", type=str)
+    args.add_argument("--path_test", default="./data/test.csv", type=str)
+    args.add_argument("--path_submission", default="./data/submission.csv", type=str)
+    args.add_argument("--target_name", default="survived", type=str)
+    # EDA 분석 결과 
+    args.add_argument("--drop_cols", default=['passengerid', 'name', 'ticket'], type=list)
+    args.add_argument("--transform_cols", default=['age', 'fare'], type=list)
+    args.add_argument("--encoding_cols", default=['pclass', 'gender', 'cabin', 'embarked'], type=list)
+
+    main(args.parse_args()) 
 
