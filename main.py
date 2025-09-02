@@ -10,6 +10,7 @@ import argparse
 ###############################
 from service.data_setup import do_load_dataset
 from service.preprocessing.data_preprocessing import do_preprocessing
+from service.modeling.training import do_training
 
 def main(args):
     # 데이터 로드 
@@ -24,8 +25,9 @@ def main(args):
                         transform_cols=args.transform_cols,
                         encoding_cols=args.encoding_cols)
     
-    
-
+    # 모델 학습 
+    is_submission = do_training(df_train, df_train_target, args)
+    logging.info(f"is_submission: {is_submission}")
 
 if __name__ == "__main__":
     ###############################
@@ -40,6 +42,8 @@ if __name__ == "__main__":
     args.add_argument("--drop_cols", default=['passengerid', 'name', 'ticket'], type=list)
     args.add_argument("--transform_cols", default=['age', 'fare'], type=list)
     args.add_argument("--encoding_cols", default=['pclass', 'gender', 'cabin', 'embarked'], type=list)
+    args.add_argument("--model_name", default="lightgbm", type=str)
+    args.add_argument("--hp", default={}, type=dict)
 
     main(args.parse_args()) 
 
